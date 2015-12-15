@@ -3,10 +3,13 @@ import Tkinter
 import ttk
 import tkMessageBox
 import speed
+import time
 
 #Initialize GUI
 root = Tk()
 root.title("Network Speed Testing Tool")
+
+running= True 
 
 def showInfo():
 	tkMessageBox.showinfo( "Info", "College of Charleston 2015\nCSCI 440 - Computer Networks\nFinal Project: Network Speed Testing Tool")
@@ -14,28 +17,58 @@ def showInfo():
 def showAbout():
 	tkMessageBox.showinfo( "About Us", "Developers:\n- Aaron Allsbrook\n- Marta Pancaldi\n- Matt Piazza")
 
+#def reset():
+
+def stop():
+	global running
+	running=False
+
+
 def speedTest():
+	global running
+
 	host="162.243.237.100"
 	transferSizeList=[10, 100, 1000, 10000, 100000, 1000000]
 	totalTransferSize=0
-	totalTransferTime=0
+	totalULTransferTime=0
+	totalDLTransferTime=0
 	fileNum=0
 	
+	#set button 1 to Stop test 
+	button1["command"]= stop 
+	button1["text"]="Stop"
+
+	button2 = Tkinter.Button(button2Label, text =" Reset ", command = speedTest)
+	button2.pack()
+
 	#progress bars
 	uploadPB=ttk.Progressbar(uploadPBLabel, orient="horizontal", length= 100, mode="determinate", value=0, maximum=len(transferSizeList))
 	downloadPB=ttk.Progressbar(downloadPBLabel, orient="horizontal", length= 100, mode="determinate", value=0, maximum=len(transferSizeList))
 	
 	print "Starting speed test"
+	
 	uploadPB.pack()
 	downloadPB.pack()
-	while(fileNum<len(transferSizeList)):
+	
+	while(fileNum<len(transferSizeList) and running):
 		totalTransferSize+=transferSizeList[fileNum]
+   		upload.set("\n  DOWNLOAD SPEED\nDownloading file #"+str(fileNum+1)+"...\n")
+   		#totalDLTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
+   		fileNum += 1
+   		downloadPB["value"]+=1
 
+   	fileNum=0
+
+   	while(fileNum<len(transferSizeList) and running):
+		totalTransferSize+=transferSizeList[fileNum]
    		upload.set("\n  UPLOAD SPEED\nUploading file #"+str(fileNum+1)+"...\n")
-   		#totalTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
+   		#totalULTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
    		fileNum += 1
    		uploadPB["value"]+=1
-   		
+
+   	button2.pack_forget()
+   	uploadPB.pack_forget()
+   	downloadPB.pack_forget()	
 
 
 
@@ -81,8 +114,13 @@ uploadPBLabel.pack();
 whiteLabel = Label(root)
 whiteLabel.pack()
 
-startB = Tkinter.Button(root, text =" Start test ", command = speedTest)
-startB.pack()
+button1Label= Label(root, width=55, bg="gray85", anchor="w", relief=FLAT)
+button1Label.pack()
+button2Label= Label(root, width=55, bg="gray85", anchor="w", relief=FLAT)
+button2Label.pack()
+
+button1 = Tkinter.Button(button1Label, text =" Start test ", command = speedTest)
+button1.pack()
 
 whiteLabel = Label(root)
 whiteLabel.pack()
