@@ -1,19 +1,10 @@
-#!/usr/bin/python
-
-#import Tkinter
-#top = Tkinter.Tk()
-# Code to add widgets will go here...
-#top.mainloop()
-
-
-#!/usr/bin/python
-# -*- coding: iso-8859-1 -*-
-
 from Tkinter import *
 import Tkinter
+import ttk
 import tkMessageBox
 import speed
 
+#Initialize GUI
 root = Tk()
 root.title("Network Speed Testing Tool")
 
@@ -22,15 +13,45 @@ def showInfo():
 
 def showAbout():
 	tkMessageBox.showinfo( "About Us", "Developers:\n- Aaron Allsbrook\n- Marta Pancaldi\n- Matt Piazza")
+
+def speedTest():
+	host="162.243.237.100"
+	transferSizeList=[10, 100, 1000, 10000, 100000, 1000000]
+	totalTransferSize=0
+	totalTransferTime=0
+	fileNum=0
+	
+	#progress bars
+	uploadPB=ttk.Progressbar(uploadPBLabel, orient="horizontal", length= 100, mode="determinate", value=0, maximum=len(transferSizeList))
+	downloadPB=ttk.Progressbar(downloadPBLabel, orient="horizontal", length= 100, mode="determinate", value=0, maximum=len(transferSizeList))
+	
+	print "Starting speed test"
+	uploadPB.pack()
+	downloadPB.pack()
+	while(fileNum<len(transferSizeList)):
+		totalTransferSize+=transferSizeList[fileNum]
+
+   		upload.set("\n  UPLOAD SPEED\nUploading file #"+str(fileNum+1)+"...\n")
+   		#totalTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
+   		fileNum += 1
+   		uploadPB["value"]+=1
+   		
+
+
+
+#GUI
+#menubar
 menubar = Menu(root)
 menu = Menu(menubar, tearoff=0)
 menu.add_command(label="Info", command=showInfo)
 menu.add_command(label="About Us", command=showAbout)
 menubar.add_cascade(label="Menu", menu=menu)
 
+#label strings
 text = Text(root)
 intro = StringVar()
-info = StringVar()
+download = StringVar()
+upload= StringVar()
 results = StringVar()
 
 whiteLabel = Label(root, width=65)
@@ -43,28 +64,22 @@ introLabel.pack()
 whiteLabel = Label(root)
 whiteLabel.pack()
 
-testLabel = Label (root, textvariable=info, width=55, bg="gray85", anchor="w", relief=RAISED, font=("Arial", 16))
-info.set("\n  DOWNLOAD SPEED\n\n\n UPLOAD SPEED\n\n")
-testLabel.pack()
+downloadLabel = Label (root, textvariable=download, width=55, bg="gray85", anchor="w", relief=FLAT, font=("Arial", 16))
+download.set("  DOWNLOAD SPEED")
+downloadLabel.pack()
+
+downloadPBLabel = Label (root, width=55, bg="gray85", anchor="w", relief=FLAT, font=("Arial", 16))
+downloadPBLabel.pack();
+
+uploadLabel = Label (root, textvariable=upload, width=55, bg="gray85", anchor="w", relief=FLAT, font=("Arial", 16))
+upload.set("  UPLOAD SPEED")
+uploadLabel.pack()
+
+uploadPBLabel = Label (root, width=55, bg="gray85", anchor="w", relief=FLAT, font=("Arial", 16))
+uploadPBLabel.pack();
 
 whiteLabel = Label(root)
 whiteLabel.pack()
-
-def speedTest():
-	transferSizeList=[10, 100, 1000, 10000, 100000, 1000000]
-	totalTransferSize=0
-	totalTransferTime=0
-	fileNum=1
-	print "Starting speed test"
-
-	while(fileNum<len(transferSizeList)):
-		totalTransferSize+=transferSizeList[fileNum]
-   		info.set("\n  DOWNLOAD SPEED\nDone.\n\n UPLOAD SPEED\nUploading file"+str(fileNum)+"...\n")
-   		totalTransferTime+=speed.test_upload("162.243.237.100", 8080, transferSizeList[1])
-	
-   	#implement with tester method, which downloads/uploads the sample files and shows the results
-   	#info.set("\n  DOWNLOAD SPEED\nDownloading files...\n\n UPLOAD SPEED\n\n")
-   	#speed.test_download()
 
 startB = Tkinter.Button(root, text =" Start test ", command = speedTest)
 startB.pack()
