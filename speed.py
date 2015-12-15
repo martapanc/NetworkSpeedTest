@@ -102,7 +102,7 @@ def server(portnum):
 	s.close()
 	return 1
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 	# then it's being run as a command-line server
 	# not being called from the gui
 	#test_upload("test.mattpiazza.com", 8080, eval(sys.argv[1]))

@@ -12,6 +12,7 @@
 from Tkinter import *
 import Tkinter
 import tkMessageBox
+import speed
 
 root = Tk()
 root.title("Network Speed Testing Tool")
@@ -43,15 +44,27 @@ whiteLabel = Label(root)
 whiteLabel.pack()
 
 testLabel = Label (root, textvariable=info, width=55, bg="gray85", anchor="w", relief=RAISED, font=("Arial", 16))
-info.set("\n  DOWNLOAD SPEED\n  Downloading sample file... 		\n\n  UPLOAD SPEED\n  Uploading sample file... 	 	 \n")
+info.set("\n  DOWNLOAD SPEED\n\n\n UPLOAD SPEED\n\n")
 testLabel.pack()
 
 whiteLabel = Label(root)
 whiteLabel.pack()
 
 def speedTest():
-   print "Starting speed test"
-   #implement with tester method, which downloads/uploads the sample files and shows the results
+	transferSizeList=[10, 100, 1000, 10000, 100000, 1000000]
+	totalTransferSize=0
+	totalTransferTime=0
+	fileNum=1
+	print "Starting speed test"
+
+	while(fileNum<len(transferSizeList)):
+		totalTransferSize+=transferSizeList[fileNum]
+   		info.set("\n  DOWNLOAD SPEED\nDone.\n\n UPLOAD SPEED\nUploading file"+str(fileNum)+"...\n")
+   		totalTransferTime+=speed.test_upload("162.243.237.100", 8080, transferSizeList[1])
+	
+   	#implement with tester method, which downloads/uploads the sample files and shows the results
+   	#info.set("\n  DOWNLOAD SPEED\nDownloading files...\n\n UPLOAD SPEED\n\n")
+   	#speed.test_download()
 
 startB = Tkinter.Button(root, text =" Start test ", command = speedTest)
 startB.pack()
