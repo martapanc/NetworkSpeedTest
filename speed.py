@@ -9,6 +9,7 @@ def test_upload(host, port, payloadsize):
 	#							IP4 			TCP
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
+	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	print("connected to server at "+host+":"+str(port))
 	sent = 0
 	size = len(payload_bytes)
@@ -38,6 +39,7 @@ def test_download(host, port, payloadsize):
 	#							IP4 			TCP
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
+	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	print("connected to server at "+host+":"+str(port)+" for dowload testing...")
 	sent = 0
 	size = len(payload_bytes)
@@ -47,28 +49,48 @@ def test_download(host, port, payloadsize):
 		print("houston, we have a problem. failed to send request to server")
 	# now we've told the server how many bytes we want back, so receive them
 	starttime = time.time()
-	numbytes = readfile(s)
+	#numbytes = readfile(s)
+	sentbytes = 0
+	last_rcvd = s.recv(payloadsize - sentbytes + len(EOF))
+	print("waiting for network stuff")
+	while EOF not in last_rcvd.decode('ascii'):
+		last_rcvd = s.recv(payloadsize - sentbytes + len(EOF))
+		sentbytes += len(last_rcvd)
+	print("got all the stuff from the network")
 	elapsed = time.time() - starttime
+	return elapsed
 
 
 def readfile(s):
 	last_rcvd = bytearray()
 	numbytes = 0
+	isDownload = False
 	# receive until we hit the delimiter
 	while EOF not in last_rcvd.decode('ascii'):
 		last_rcvd = s.recv(1024)
 		numbytes += len(last_rcvd)
 		if DOWNLOAD_OPCODE in last_rcvd.decode('ascii'):
+			isDownload = True
 			# tell the caller that they should take some other action
 			# message format = "DOWNLOAD <numbytes>"
 			message = last_rcvd.decode('ascii')
-			print("ooh, we should send back "+message[len(DOWNLOAD_OPCODE+1)]+" bytes")
-			return -1 * eval(message[len(DOWNLOAD_OPCODE+1)])
+			print("ooh, we should send back "+ message[len(DOWNLOAD_OPCODE)+1:] +" bytes")
+			return -1 * eval(message[len(DOWNLOAD_OPCODE)+1:])
 	print('done receiving data')
 	return numbytes
 
 def sendfile(s, size):
-	pass
+	payload = "v" * size + EOF
+	payload_bytes = bytearray(payload, 'ascii')
+	sent = 0
+	length = len(payload_bytes)
+	while sent < length:
+		# inc is the number of bytes sent
+		inc = s.send(payload_bytes[sent:])
+		if inc == 0:
+			# done
+			break
+		sent += inc
 
 def server(portnum):
 	#							IP4 			TCP
@@ -89,9 +111,10 @@ def server(portnum):
 		print("successfully connected to client "+str(addr))
 		bytes_recd = readfile(client_s)
 		if bytes_recd < 0:
-			sendfile(s, -1 * bytes_recd)
+			print("readfile() returned "+str(bytes_recd))
+			sendfile(client_s, -1 * bytes_recd)
 
-			payload = "v"*length_reqd + EOF
+			#payload = "v"*length_reqd + EOF
 			continue
 		print("transfer complete! received "+str(bytes_recd - len(EOF))+" bytes")
 		client_s.send(str(bytes_recd - len(EOF)))
@@ -102,11 +125,14 @@ def server(portnum):
 	s.close()
 	return 1
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
 	# then it's being run as a command-line server
 	# not being called from the gui
-	#test_upload("test.mattpiazza.com", 8080, eval(sys.argv[1]))
-	#try:
-	#	server(eval(sys.argv[1]))
-	#except KeyboardInterrupt:
-	#	print("good testing, see you soon")
+	if 'server' in sys.argv[2]:
+		try:
+			server(eval(sys.argv[1]))
+		except KeyboardInterrupt:
+			print("good testing, see you soon")
+	else:
+		print("upload took: " + str(test_upload("162.243.237.100", 8080, eval(sys.argv[1]))))
+		print("download took: "+str(test_download("162.243.237.100", 8080, eval(sys.argv[1]))))
