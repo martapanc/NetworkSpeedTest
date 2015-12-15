@@ -43,7 +43,7 @@ def test_download(host, port, payloadsize):
 	size = len(payload_bytes)
 	print("payload contains "+str(size-len(EOF))+" bytes. beginning transfer")
 	inc = s.send(payload_bytes[sent:])
-	if inc == 0
+	if inc == 0:
 		print("houston, we have a problem. failed to send request to server")
 	# now we've told the server how many bytes we want back, so receive them
 	starttime = time.time()
@@ -68,7 +68,7 @@ def readfile(s):
 	return numbytes
 
 def sendfile(s, size):
-	
+	pass
 
 def server(portnum):
 	#							IP4 			TCP
