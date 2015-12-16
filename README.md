@@ -4,6 +4,9 @@ we completed this tool as part of Dr Brent Munsell's computer networking course
 
 the tool is composed of two pieces: a gui client and a command-line server 
 ## server usage
-```python speedy.py <portnum>```
+```python speed.py <portnum> server```
 then the magical code will listen for speed-test data coming in on the specified port and respond in a way that the client likes
 that means both sending files when testing download speeds and receiving files when testing upload speeds
+
+to test the client side:
+```python speed.py <serverIP> <number of bytes to transfer>```

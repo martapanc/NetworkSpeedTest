@@ -134,5 +134,5 @@ if __name__ == '__main__':
 		except KeyboardInterrupt:
 			print("good testing, see you soon")
 	else:
-		print("upload took: " + str(test_upload("162.243.237.100", 8080, eval(sys.argv[1]))))
-		print("download took: "+str(test_download("162.243.237.100", 8080, eval(sys.argv[1]))))
+		print("upload took: " + str(test_upload(sys.argv[1], 8080, eval(sys.argv[2]))))
+		print("download took: "+str(test_download(sys.argv[1], 8080, eval(sys.argv[2]))))
