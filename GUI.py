@@ -31,6 +31,7 @@ def stop():
 	download.set("")
 	upload.set("")
 
+
 def clearAndRestart():
 	global running
 	running=True
@@ -106,6 +107,7 @@ def speedTest():
 	   	button2.pack_forget()
 	   	uploadPB.pack_forget()
 	   	downloadPB.pack_forget()
+	   	running=True
    	
 
 
