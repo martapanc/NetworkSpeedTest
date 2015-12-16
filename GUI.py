@@ -17,59 +17,62 @@ def showInfo():
 def showAbout():
 	tkMessageBox.showinfo( "About Us", "Developers:\n- Aaron Allsbrook\n- Marta Pancaldi\n- Matt Piazza")
 
-#def reset():
-
 def stop():
 	global running
 	running=False
 
-
 def speedTest():
 	global running
-
 	host="162.243.237.100"
 	transferSizeList=[10, 100, 1000, 10000, 100000, 1000000]
-	totalTransferSize=0
+	totalTransferSize= sum(transferSizeList)
 	totalULTransferTime=0
 	totalDLTransferTime=0
 	fileNum=0
+	button1.pack_forget()
 	
 	#set button 1 to Stop test 
 	button1["command"]= stop 
 	button1["text"]="Stop"
+	button1.pack()
 
-	button2 = Tkinter.Button(button2Label, text =" Reset ", command = speedTest)
+	button2 = Tkinter.Button(root, text =" Reset ", command = speedTest)
 	button2.pack()
 
 	#progress bars
-	uploadPB=ttk.Progressbar(uploadPBLabel, orient="horizontal", length= 100, mode="determinate", value=0, maximum=len(transferSizeList))
-	downloadPB=ttk.Progressbar(downloadPBLabel, orient="horizontal", length= 100, mode="determinate", value=0, maximum=len(transferSizeList))
+	uploadPB=ttk.Progressbar(uploadPBLabel, orient="horizontal", length= 200, mode="determinate", value=0, maximum=totalTransferSize)
+	downloadPB=ttk.Progressbar(downloadPBLabel, orient="horizontal", length= 200, mode="determinate", value=0, maximum=totalTransferSize)
 	
 	print "Starting speed test"
-	
-	uploadPB.pack()
+	time.sleep(1)
 	downloadPB.pack()
-	
 	while(fileNum<len(transferSizeList) and running):
-		totalTransferSize+=transferSizeList[fileNum]
-   		upload.set("\n  DOWNLOAD SPEED\nDownloading file #"+str(fileNum+1)+"...\n")
-   		#totalDLTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
+		
+   		download.set("\n  DOWNLOAD SPEED\nDownloading file #"+str(fileNum+1)+"...\n")
+   		totalDLTransferTime+=speed.test_download(host, 8080, transferSizeList[fileNum])
+   		downloadPB["value"]+=transferSizeList[fileNum]
    		fileNum += 1
-   		downloadPB["value"]+=1
+   	
+   		
+   	download.set("\n  DOWNLOAD SPEED\n {0:.2f} Mbps\n".format((totalTransferSize/totalDLTransferTime/1000000)*8)) 
 
    	fileNum=0
-
+	uploadPB.pack()
    	while(fileNum<len(transferSizeList) and running):
 		totalTransferSize+=transferSizeList[fileNum]
    		upload.set("\n  UPLOAD SPEED\nUploading file #"+str(fileNum+1)+"...\n")
-   		#totalULTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
+   		totalULTransferTime+=speed.test_upload(host, 8080, transferSizeList[fileNum])
+   		uploadPB["value"]+=transferSizeList[fileNum]
    		fileNum += 1
-   		uploadPB["value"]+=1
+
+   	upload.set("\n  UPLOAD SPEED\n {0:.2f} Mbps\n".format(((totalTransferSize/totalULTransferTime/1000000)*8))) 
+
+   	button1["text"]= "Test Again"
+   	button1["command"]= speedTest
 
    	button2.pack_forget()
    	uploadPB.pack_forget()
-   	downloadPB.pack_forget()	
-
+   	downloadPB.pack_forget()
 
 
 #GUI
