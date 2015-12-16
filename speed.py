@@ -4,7 +4,7 @@ EOF = '\n'
 DOWNLOAD_OPCODE = 'DOWNLOAD'
 
 def test_upload(host, port, payloadsize):
-	payload = "v"*payloadsize + EOF
+	payload = "v"*(payloadsize - len(EOF)) + EOF
 	payload_bytes = bytearray(payload, 'ascii')
 	#							IP4 			TCP
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,7 +34,7 @@ def test_upload(host, port, payloadsize):
 	return elapsed
 
 def test_download(host, port, payloadsize):
-	payload = DOWNLOAD_OPCODE + " " + str(payloadsize)
+	payload = DOWNLOAD_OPCODE + " " + str(payloadsize - len(EOF))
 	payload_bytes = bytearray(payload, 'ascii')
 	#							IP4 			TCP
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -80,7 +80,7 @@ def readfile(s):
 	return numbytes
 
 def sendfile(s, size):
-	payload = "v" * size + EOF
+	payload = "v" * (size - len(EOF)) + EOF
 	payload_bytes = bytearray(payload, 'ascii')
 	sent = 0
 	length = len(payload_bytes)

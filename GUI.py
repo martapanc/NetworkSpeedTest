@@ -6,7 +6,7 @@ import speed
 import time
 import threading
 
-transferSizeList=[10, 100, 1000, 10000, 100000, 1000000]
+transferSizeList=[100000, 10000, 1000, 1000, 10000, 10000, 10000, 100000, 1000000]
 totalTransferSize= sum(transferSizeList)
 host=None
 #Initialize GUI
